@@ -1,0 +1,47 @@
+name: Azure App Service CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - add-annie-app
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          CI: false
+
+      - name: Prepare artifact
+        run: |
+          # Create a zip containing everything needed to run on App Service
+          # Exclude node_modules to keep the package small; App Service will run npm install if configured
+          zip -r app_deploy.zip . -x "node_modules/*" "**/.git/*"
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: app_deploy.zip
+
+# Notes:
+# 1) Create an App Service in Azure and get the Publish Profile (in the Overview -> Get publish profile)
+#    then add it to GitHub repo secrets as AZURE_WEBAPP_PUBLISH_PROFILE.
+# 2) This workflow zips the repo and deploys it. For Next.js apps that require a Node server,
+#    ensure your App Service startup command runs the correct start script, e.g. `npm run start`.
+# 3) If you prefer to deploy only the `.next` output or use a custom build artifact folder,
+#    update the `zip` command and `package` path accordingly.
