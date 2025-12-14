@@ -1,0 +1,35 @@
+## Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# dotenv
+.env
+.env.*
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.vscode/
+.idea/
+.DS_Store
+
+# Database and large files
+*.mdf
+*.ldf
+
+# Python venv
+venv/
+
+# OneDrive and user folders (avoid committing personal files accidentally)
+OneDrive/
+"OneDrive - Keitzman Finance"/
+
+# OS generated files
+desktop.ini
+Thumbs.db
